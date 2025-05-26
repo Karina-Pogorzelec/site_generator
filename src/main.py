@@ -67,7 +67,8 @@ def generate_page(from_path, template_path, dest_path, basepath):
     title = extract_title(markdown_content)
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html)
-    template = template.replace("{{ basepath }}", relative_basepath)  
+    template = template.replace("{{ basepath }}", basepath) 
+    template = template.replace('href="/', f'href="{relative_basepath}')    
     template = template.replace('src="/', f'src="{relative_basepath}')
 
     # Debugging: Print template after replacing placeholders  
