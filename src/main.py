@@ -16,6 +16,8 @@ def main():
     basepath = default_basepath
     if len(sys.argv) > 1:
         basepath = sys.argv[1]
+    if basepath and not basepath.endswith('/'):  
+        basepath += '/' 
 
     print("Deleting public directory...")
     if os.path.exists(dir_path_public):
@@ -55,11 +57,22 @@ def generate_page(from_path, template_path, dest_path, basepath):
     node = markdown_to_html_node(markdown_content)
     html = node.to_html()
 
+    # Calculate the relative basepath for the current file  
+    relative_basepath = os.path.relpath(dir_path_public, os.path.dirname(dest_path))  
+    if relative_basepath == ".":  
+        relative_basepath = ""  
+    else:  
+        relative_basepath += "/"  
+
     title = extract_title(markdown_content)
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html)
-    template = template.replace('href="/', f'href="{basepath}') 
-    template = template.replace('src="/', f'src="{basepath}')
+    template = template.replace("{{ basepath }}", relative_basepath)  
+    template = template.replace('src="/', f'src="{relative_basepath}')
+
+    # Debugging: Print template after replacing placeholders  
+    print("Template after replacing placeholders:")  
+    print(template)  
 
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
